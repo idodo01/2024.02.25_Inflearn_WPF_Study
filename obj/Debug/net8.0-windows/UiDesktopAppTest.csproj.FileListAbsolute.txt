@@ -155,3 +155,5 @@ C:\Users\idodo\Documents\Study2_C\UiDesktopAppTest\bin\Debug\net8.0-windows\zh-H
 C:\Users\idodo\Documents\Study2_C\UiDesktopAppTest\bin\Debug\net8.0-windows\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\idodo\Documents\Study2_C\UiDesktopAppTest\bin\Debug\net8.0-windows\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
 C:\Users\idodo\Documents\Study2_C\UiDesktopAppTest\obj\Debug\net8.0-windows\UiDesktopAppTest.sourcelink.json
+C:\Users\idodo\Documents\Study2_C\UiDesktopAppTest\obj\Debug\net8.0-windows\Controls\LoadingControl.g.cs
+C:\Users\idodo\Documents\Study2_C\UiDesktopAppTest\obj\Debug\net8.0-windows\Controls\LoadingControl.baml

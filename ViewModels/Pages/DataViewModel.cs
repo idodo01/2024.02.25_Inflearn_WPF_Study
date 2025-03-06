@@ -7,32 +7,130 @@ namespace UiDesktopAppTest.ViewModels.Pages
 {
     public partial class DataViewModel : ObservableObject, INavigationAware
     {
-        private bool _isInitialized = false;
+        #region FIELDS
 
-        private readonly IDatabase<GangnamguPopulation?>? _database;
+        private bool isInitialized = false;
 
+        private readonly IDatabase<GangnamguPopulation?>? database;
 
-        public DataViewModel(IDatabase<GangnamguPopulation>? database) {
-            this._database = database;
+        #endregion
+
+        #region PROPERTIES
+
+        [ObservableProperty]
+        private IEnumerable<GangnamguPopulation?>? gangnamguPopulations;
+
+        [ObservableProperty]
+        private IEnumerable<string?>? administrativeAgency;
+
+        [ObservableProperty]
+        private string? selectedAdministrativeAgency;
+
+        [ObservableProperty]
+        private int? selectedTotalPopulation;
+
+        [ObservableProperty]
+        private int? selectedMalePopulation;
+
+        [ObservableProperty]
+        private int? selectedFeMalePopulation;
+
+        [ObservableProperty]
+        private double? selectedSexRatio;
+
+        [ObservableProperty]
+        private int? selectedNumberOfHouseholds;
+
+        [ObservableProperty]
+        private double? selectedNumberOfPeoplePerHouseholds;
+
+        [ObservableProperty]
+        private int? selectedId;
+
+        #endregion
+
+        #region CONSTRUCTOR
+
+        public DataViewModel(IDatabase<GangnamguPopulation?>? database)
+        {
+            this.database = database;
         }
 
+        #endregion
 
-        [ObservableProperty]
-        private IEnumerable<DataColor> _colors;
+        #region COMMANDS
 
-        [ObservableProperty]
-        private IEnumerable<GangnamguPopulation?>? _gangnamguPopulations;
+        [RelayCommand]
+        private void OnSelectAdministrativeAgency()
+        {
+            var selectedData = this.SelectedAdministrativeAgency;
+        }
 
-        [ObservableProperty]
-        private IEnumerable<string?>? _adminstrativeAgency;
+        [RelayCommand]
+        private void UpdateData()
+        {
+            var data = this.database?.GetDetail(this.SelectedId);
 
-        [ObservableProperty]
-        private string? _selectedAdministrativeAgency;
+            data.AdministrativeAgency = this.SelectedAdministrativeAgency;
+            data.TotalPopulation = this.SelectedTotalPopulation;
+            data.MalePopulation = this.SelectedMalePopulation;
+            data.FemalePopulation = this.SelectedFeMalePopulation;
+            data.SexRatio = this.SelectedSexRatio;
+            data.NumberOfHouseholds = this.SelectedNumberOfHouseholds;
+            data.NumberOfPeoplePerHousehold = this.SelectedNumberOfPeoplePerHouseholds;
 
+            this.database?.Update(data);
+        }
+
+        [RelayCommand]
+        private void DeleteData()
+        {
+            this.database?.Delete(this.SelectedId);
+        }
+
+        [RelayCommand]
+        private void ReadDetailData()
+        {
+            var data = this.database?.GetDetail(this.SelectedId);
+
+            this.SelectedAdministrativeAgency = data.AdministrativeAgency;
+            this.SelectedTotalPopulation = data.TotalPopulation;
+            this.SelectedMalePopulation = data.MalePopulation;
+            this.SelectedFeMalePopulation = data.FemalePopulation;
+            this.SelectedSexRatio = data.SexRatio;
+            this.SelectedNumberOfHouseholds = data.NumberOfHouseholds;
+            this.SelectedNumberOfPeoplePerHouseholds = data.NumberOfPeoplePerHousehold;
+        }
+
+        [RelayCommand]
+        private void CreateNewData()
+        {
+            GangnamguPopulation gangnamguPopulation = new GangnamguPopulation();
+
+            gangnamguPopulation.AdministrativeAgency = this.SelectedAdministrativeAgency;
+            gangnamguPopulation.TotalPopulation = this.SelectedTotalPopulation;
+            gangnamguPopulation.MalePopulation = this.SelectedMalePopulation;
+            gangnamguPopulation.FemalePopulation = this.SelectedFeMalePopulation;
+            gangnamguPopulation.SexRatio = this.SelectedSexRatio;
+            gangnamguPopulation.NumberOfHouseholds = this.SelectedNumberOfHouseholds;
+            gangnamguPopulation.NumberOfPeoplePerHousehold = this.SelectedNumberOfPeoplePerHouseholds;
+
+            this.database?.Create(gangnamguPopulation);
+        }
+
+        [RelayCommand]
+        private void ReadAllData()
+        {
+            this.GangnamguPopulations = this.database?.Get();
+        }
+
+        #endregion
+
+        #region METHOS
         public void OnNavigatedTo()
         {
-            if (!_isInitialized)
-                InitializeViewModel();
+            if (!isInitialized)
+                InitializeViewModelAsync();
         }
 
         public void OnNavigatedFrom() { }
@@ -45,14 +143,21 @@ namespace UiDesktopAppTest.ViewModels.Pages
         }
 
 
-        private void InitializeViewModel()
+        private async Task InitializeViewModelAsync()
         {
-         
-            this.GangnamguPopulations = this._database.Get();
 
-            this.AdminstrativeAgency = this.GangnamguPopulations?.Select(c => c.AdministrativeAgency).ToList();
+            // 비동기로 데이터를 가져오기
+            this.GangnamguPopulations = await Task.Run(() => this.database?.Get());
 
-            _isInitialized = true;
+            // 가져온 데이터를 가지고 필요한 작업 수행
+            if (this.GangnamguPopulations != null)
+            {
+                this.AdministrativeAgency = this.GangnamguPopulations?.Select(c => c.AdministrativeAgency).ToList();
+            }
+
+            isInitialized = true;
         }
+
+        #endregion
     }
 }
